@@ -152,83 +152,85 @@ for course_list in jsonpath.jsonpath(response.json(),'$..course_detail'):
         project_num=eval(input('请输入你的课程编号:'))
         sub_course_list = jsonpath.jsonpath(terms[project_num], '$..sub_info')
         # print(sub_course_list)
-        for sub_course in sub_course_list[0]:
+        for sub_course1 in sub_course_list:
             print('-------')
-            # print(sub_course)
-            part_name = sub_course['name']
-            print(part_name)
-            task_list = sub_course['task_info']
-            for task in task_list:
-                if task['type'] == 3:
-                    continue
-                if task['type'] == 1:
-                    title = task['name'].replace('/','-')
-                    # print(task['resid_list'])
-                    try:
-                        resid_list = str(re.findall(r"\b\d+\b", str(task['resid_list']))[0])
-                    except:
-                        print('已过期，无法下载')
-                        break
-                    term_id = str(task['term_id'])
-                    realurl = get_realurl(term_id, resid_list)
-                    filedir = r'.\视频'+'\{}\{}'.format(cname,part_name)
-                    if os.path.exists(filedir+'\\'+title+'.mp4'):
-                        print(title)
-                        print('已下载，不重复下载')
-                    else:
-                        m3u8download(realurl, title=title, work_dir=filedir)
-                    # print(title)
-                    # print(resid_list)
-                    # print(filedir)
-                if task['type'] == 2:
-                    title = task['name']
-                    resid_list = str(task['resid_list'])
-                    term_id = str(task['term_id'])
-                    # print(title)
-                    realurl = get_realurl(term_id, resid_list)
-                    # print(realurl)
+            # print(len(sub_course1))
+            for sub_course in sub_course1:
+                part_name = sub_course['name']
+                print(part_name)
+                task_list = sub_course['task_info']
+                for task in task_list:
+                    if task['type'] == 3:
+                        continue
+                    if task['type'] == 1:
+                        title = task['name'].replace('/','-')
+                        # print(task['resid_list'])
+                        try:
+                            resid_list = str(re.findall(r"\b\d+\b", str(task['resid_list']))[0])
+                        except:
+                            print('已过期，无法下载')
+                            break
+                        term_id = str(task['term_id'])
+                        realurl = get_realurl(term_id, resid_list)
+                        filedir = r'.\视频'+'\{}\{}'.format(cname,part_name)
+                        if os.path.exists(filedir+'\\'+title+'.mp4'):
+                            print(title)
+                            print('已下载，不重复下载')
+                        else:
+                            m3u8download(realurl, title=title, work_dir=filedir)
+                        # print(title)
+                        # print(resid_list)
+                        # print(filedir)
+                    if task['type'] == 2:
+                        title = task['name']
+                        resid_list = str(task['resid_list'])
+                        term_id = str(task['term_id'])
+                        # print(title)
+                        realurl = get_realurl(term_id, resid_list)
+                        # print(realurl)
 
-                    filedir = r'.\视频' + '\{}\{}'.format(cname, part_name)
-                    if os.path.exists(filedir+'\\'+title+'.mp4'):
-                        print(title)
-                        print('已下载，不重复下载')
-                    else:
-                        m3u8download(realurl, title=title, work_dir=filedir)
+                        filedir = r'.\视频' + '\{}\{}'.format(cname, part_name)
+                        if os.path.exists(filedir+'\\'+title+'.mp4'):
+                            print(title)
+                            print('已下载，不重复下载')
+                        else:
+                            m3u8download(realurl, title=title, work_dir=filedir)
 
     else:
         sub_course_list=jsonpath.jsonpath(course_list,'$..sub_info')
         # print(sub_course_list)
-        for sub_course in sub_course_list[0]:
+        for sub_course1 in sub_course_list:
             print('-------')
-            # print(sub_course)
-            part_name=sub_course['name']
-            print(part_name)
-            task_list=sub_course['task_info']
-            for task in task_list:
-                if task['type']==3:
-                    continue
-                if task['type']==1:
-                    title = task['name']
-                    try:
-                        resid_list=str(re.findall(r"\b\d+\b", str(task['resid_list']))[0])
-                    except:
-                        print('已过期，无法下载')
-                        break
+            # print(len(sub_course1))
+            for sub_course in sub_course1:
+                part_name=sub_course['name']
+                print(part_name)
+                task_list=sub_course['task_info']
+                for task in task_list:
+                    if task['type']==3:
+                        continue
+                    if task['type']==1:
+                        title = task['name']
+                        try:
+                            resid_list=str(re.findall(r"\b\d+\b", str(task['resid_list']))[0])
+                        except:
+                            print('已过期，无法下载')
+                            break
 
-                if task['type']==2:
-                    title=task['name']
-                    resid_list=str(task['resid_list'])
-                    term_id=str(task['term_id'])
-                    # print(title)
-                    realurl=get_realurl(term_id,resid_list)
-                    # print(realurl)
+                    if task['type']==2:
+                        title=task['name']
+                        resid_list=str(task['resid_list'])
+                        term_id=str(task['term_id'])
+                        # print(title)
+                        realurl=get_realurl(term_id,resid_list)
+                        # print(realurl)
 
-                    filedir = r'.\视频'+'\{}\{}'.format(cname,part_name)
-                    if os.path.exists(filedir+'\\'+title+'.mp4'):
-                        print(title)
-                        print('已下载，不重复下载')
-                    else:
-                        m3u8download(realurl, title=title, work_dir=filedir)
+                        filedir = r'.\视频'+'\{}\{}'.format(cname,part_name)
+                        if os.path.exists(filedir+'\\'+title+'.mp4'):
+                            print(title)
+                            print('已下载，不重复下载')
+                        else:
+                            m3u8download(realurl, title=title, work_dir=filedir)
 
 
 
