@@ -6,7 +6,7 @@ from m3u8download_hecoter import m3u8download
 from playwright.sync_api import sync_playwright
 import os
 
-
+print('---------程序正在启动打开本地浏览器---------')
 with sync_playwright() as p:
     browser = p.chromium.launch(channel='msedge', headless=False)
     context = browser.new_context()
