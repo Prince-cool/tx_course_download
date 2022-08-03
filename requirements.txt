@@ -3,3 +3,4 @@ jsonpath
 requests
 m3u8download_hecoter
 playwright
+PyExecjs
