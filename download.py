@@ -5,6 +5,9 @@ import re
 from m3u8download_hecoter import m3u8download
 from playwright.sync_api import sync_playwright
 import os
+import execjs
+
+ctx=execjs.compile(open('1.js','r',encoding='utf-8').read())
 
 print('---------程序正在启动打开本地浏览器---------')
 with sync_playwright() as p:
@@ -107,19 +110,21 @@ def get_realurl(term_id,resid_list):
     }
     response2 = requests.get(url2, headers=headers2, params=params2)
     # print(response2.json())
+    d_sign=jsonpath.jsonpath(response2.json(),'$..d_sign')[0]
+    key=ctx.call('get_key',d_sign)
     key_url=jsonpath.jsonpath(response2.json(),'$..url')[0]
     if skey=='':
-        str = "uin={};skey=;pskey=;plskey=;ext={};uid_appid={};uid_type={};uid_origin_uid_type={};uid_origin_auth_type={};cid={};term_id={};vod_type=0".format(uin,uid_a2,uid_appid,uid_type,uid_origin_uid_type,uid_origin_auth_type,cid,term_id).encode()
+        str = "uin={}&term_id={}".format(uin,term_id).encode()
     else:
-        str ='uin={};skey={};pskey={};plskey={};ext=;uid_type={};uid_origin_uid_type={};uid_origin_auth_type={};cid={};term_id={};vod_type=0'.format(uin,skey,p_skey,p_lskey,uid_type,uid_origin_uid_type,uid_origin_auth_type,cid,term_id).encode()
-    key = base64.b64encode(str).decode()
+        str = "uin={}&term_id={}".format(uin,term_id).encode()
+    str = base64.b64encode(str).decode()
     # print(key)
     list1 = key_url.split('/')
-    list1.insert(6, 'voddrm.token.{}.'.format(key) + list1[6])
+    list1.insert(6, 'voddrm.token.{}.'.format(str) + list1[6])
     del list1[7]
     # print(list1)
     real_url = '/'.join(list1)
-    return real_url
+    return real_url,key
 
 def validateTitle(title):
     rstr = r"[\/\\\:\*\?\"\<\>\|]"  # '/ \ : * ? " < > |'
@@ -175,13 +180,13 @@ for course_list in jsonpath.jsonpath(response.json(),'$..course_detail'):
                             print('已过期，无法下载')
                             break
                         term_id = str(task['term_id'])
-                        realurl = get_realurl(term_id, resid_list)
+                        realurl,key=get_realurl(term_id,resid_list)
                         filedir = r'.\视频'+'\{}\{}'.format(cname,part_name)
                         if os.path.exists(filedir+'\\'+title+'.mp4'):
                             print(title)
                             print('已下载，不重复下载')
                         else:
-                            m3u8download(realurl, title=title, work_dir=filedir)
+                            m3u8download(realurl,key=key, title=title, work_dir=filedir)
                         # print(title)
                         # print(resid_list)
                         # print(filedir)
@@ -190,15 +195,14 @@ for course_list in jsonpath.jsonpath(response.json(),'$..course_detail'):
                         resid_list = str(task['resid_list'])
                         term_id = str(task['term_id'])
                         # print(title)
-                        realurl = get_realurl(term_id, resid_list)
+                        realurl,key=get_realurl(term_id,resid_list)
                         # print(realurl)
-
                         filedir = r'.\视频' + '\{}\{}'.format(cname, part_name)
                         if os.path.exists(filedir+'\\'+title+'.mp4'):
                             print(title)
                             print('已下载，不重复下载')
                         else:
-                            m3u8download(realurl, title=title, work_dir=filedir)
+                            m3u8download(realurl,key=key, title=title, work_dir=filedir)
 
     else:
         sub_course_list=jsonpath.jsonpath(course_list,'$..sub_info')
@@ -216,17 +220,26 @@ for course_list in jsonpath.jsonpath(response.json(),'$..course_detail'):
                     if task['type']==1:
                         title = validateTitle(task['name'])
                         try:
+                            term_id=str(task['term_id'])
                             resid_list=str(re.findall(r"\b\d+\b", str(task['resid_list']))[0])
                         except:
                             print('已过期，无法下载')
                             break
+                        realurl,key=get_realurl(term_id,resid_list)
+                        filedir = r'.\视频'+'\{}\{}'.format(cname,part_name)
+                        if os.path.exists(filedir+'\\'+title+'.mp4'):
+                            print(title)
+                            print('已下载，不重复下载')
+                        else:
+                            m3u8download(realurl,key=key, title=title, work_dir=filedir)
+
 
                     if task['type']==2:
                         title=validateTitle(task['name'])
                         resid_list=str(task['resid_list'])
                         term_id=str(task['term_id'])
                         # print(title)
-                        realurl=get_realurl(term_id,resid_list)
+                        realurl,key=get_realurl(term_id,resid_list)
                         # print(realurl)
 
                         filedir = r'.\视频'+'\{}\{}'.format(cname,part_name)
@@ -234,7 +247,7 @@ for course_list in jsonpath.jsonpath(response.json(),'$..course_detail'):
                             print(title)
                             print('已下载，不重复下载')
                         else:
-                            m3u8download(realurl, title=title, work_dir=filedir)
+                            m3u8download(realurl,key=key, title=title, work_dir=filedir)
 
 
 
