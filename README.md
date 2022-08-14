@@ -21,6 +21,7 @@ tx课堂下载器：
 ​	requirements.txt
 
 ## 使用方法
+新版本先安装好node环境！！！
 
 若电脑有相应第三方库，可直接运行download.py程序
 
@@ -31,7 +32,7 @@ cd 文件夹
 python -m venv 虚拟环境名称
 虚拟环境名称\scripts\activate
 pip install -Ur requirements.txt
-python qcourse.py
+python download.py
 ```
 
 运行后，按照相应的提示，填入相应的值，便可下载课程完整视频到本地
